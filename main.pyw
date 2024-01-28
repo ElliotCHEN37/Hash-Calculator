@@ -1,23 +1,25 @@
 import sys
 import hashlib
 import zlib
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QMessageBox, QMainWindow, QAction, QMenu
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
-class HashCalculator(QWidget):
+class HashCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.init_ui()
 
     def init_ui(self):
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
         layout = QVBoxLayout()
 
-        self.file_path_label = QLabel('選擇文件:')
+        self.file_path_label = QLabel('Selected File:')
         self.file_path_line_edit = QLabel()
         self.file_path_line_edit.setWordWrap(True)
 
-        self.browse_button = QPushButton('瀏覽')
+        self.browse_button = QPushButton('Browse')
         self.browse_button.clicked.connect(self.browse_file)
 
         layout.addWidget(self.file_path_label)
@@ -31,32 +33,39 @@ class HashCalculator(QWidget):
             layout.addWidget(label)
             layout.addWidget(result_label)
 
-        self.setLayout(layout)
-        self.setWindowTitle('Hash Calculator')
-        self.setGeometry(300, 300, 400, 300)
+        self.central_widget.setLayout(layout)
+        self.setWindowTitle('Hash Calculator - Waiting for user action')
+        self.setGeometry(300, 300, 700, 300)
 
         self.setAcceptDrops(True)
 
-        # 創建哈希計算的執行緒
         self.hash_thread = HashThread(self)
-        # 連接信號
         self.hash_thread.hash_results_ready.connect(self.update_hash_results)
+
+        menubar = self.menuBar()
+        file_menu = menubar.addMenu('File')
+        file_action = QAction('Select file', self)
+        file_action.triggered.connect(self.browse_file)
+        file_menu.addAction(file_action)
+        about_menu = menubar.addMenu('About')
+        about_action = QAction('About', self)
+        about_action.triggered.connect(self.show_about_dialog)
+        about_menu.addAction(about_action)
 
     def browse_file(self):
         options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, '選擇文件', '', 'All Files (*)', options=options)
+        file_path, _ = QFileDialog.getOpenFileName(self, 'Select file', '', 'All Files (*)', options=options)
 
         if file_path:
             self.file_path_line_edit.setText(file_path)
-            # 在選擇文件後啟動計算哈希值的執行緒
             self.hash_thread.set_file_path(file_path)
+            self.setWindowTitle('Hash Calculator - Calculating')
             self.hash_thread.start()
 
     def update_hash_results(self, results):
-        # 更新哈希值結果
         for result_label, result in zip(self.hash_results, results):
             result_label.setText(result)
-        self.setWindowTitle('Hash Calculator - 完成')
+        self.setWindowTitle('Hash Calculator - Done')
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -65,13 +74,15 @@ class HashCalculator(QWidget):
     def dropEvent(self, event):
         file_path = event.mimeData().urls()[0].toLocalFile()
         self.file_path_line_edit.setText(file_path)
-        # 在拖放文件後啟動計算哈希值的執行緒
         self.hash_thread.set_file_path(file_path)
+        self.setWindowTitle('Hash Calculator - Calculating')
         self.hash_thread.start()
-        self.setWindowTitle('Hash Calculator - 計算中')
+
+    def show_about_dialog(self):
+        about_text = "Hash Calculator English Edition Version 1.3, Source Code\n\nBuilt: 24.01.28\n\nBy ElliotCHEN\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator"
+        QMessageBox.about(self, "About", about_text)
 
 class HashThread(QThread):
-    # 定義信號
     hash_results_ready = pyqtSignal(list)
 
     def __init__(self, parent=None):
@@ -101,13 +112,12 @@ class HashThread(QThread):
 
                         results.append(hash_value)
 
-                # 發送信號通知主執行緒更新界面
                 self.hash_results_ready.emit(results)
             except Exception as e:
                 print(str(e))
-                self.hash_results_ready.emit(['錯誤: ' + str(e)])
+                self.hash_results_ready.emit(['Error: ' + str(e)])
         else:
-            self.hash_results_ready.emit(['請選擇文件'])
+            self.hash_results_ready.emit(['Please select file'])
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
