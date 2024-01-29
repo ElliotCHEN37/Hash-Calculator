@@ -1,4 +1,12 @@
 # Hash-Calculator
 Hash Calculator made with Python
 
-![Hash Calculator](Hash-Calculator-About-Page.png)
+![Hash Calculator](Hash_Calculator_v1.4.png)
+
+## Changelog
+v1.4
+
+-New Export feature
+
+## About
+[LICENSE](LICENSE.txt)
