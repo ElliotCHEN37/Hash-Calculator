@@ -13,3 +13,5 @@ v1.4
 
 ## Sponsor
 李涵博 $0.42 CNY
+
+![WeChat](WeChat.JPG)
