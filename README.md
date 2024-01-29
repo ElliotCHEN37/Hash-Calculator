@@ -10,3 +10,6 @@ v1.4
 
 ## About
 [LICENSE](LICENSE.txt)
+
+## Sponsor
+李涵博 $0.42 CNY

@@ -61,6 +61,9 @@ class HashCalculator(QMainWindow):
         changelog_action = QAction('Changelog', self)
         changelog_action.triggered.connect(self.show_changelog_dialog)
         about_menu.addAction(changelog_action)
+        sponsor_action = QAction('Sponsor', self)
+        sponsor_action.triggered.connect(self.show_sponsor_dialog)
+        about_menu.addAction(sponsor_action)
 
     def browse_file(self):
         options = QFileDialog.Options()
@@ -115,6 +118,10 @@ class HashCalculator(QMainWindow):
     def show_changelog_dialog(self):
         changelog_text = "v1.4 (01/29/24)\nNew\n-Export Feature"
         QMessageBox.about(self, "Changelog", changelog_text)
+
+    def show_sponsor_dialog(self):
+        sponsor_text = "李涵博 $0.42 CNY"
+        QMessageBox.about(self, "Sponsor", sponsor_text)
 
 class HashThread(QThread):
     hash_results_ready = pyqtSignal(list)
