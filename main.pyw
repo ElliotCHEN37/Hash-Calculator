@@ -5,7 +5,10 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, 
     QMessageBox, QMainWindow, QAction, QMenu
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QCoreApplication
+
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 class HashCalculator(QMainWindow):
     def __init__(self):
@@ -44,23 +47,31 @@ class HashCalculator(QMainWindow):
         self.hash_thread.hash_results_ready.connect(self.update_hash_results)
 
         menubar = self.menuBar()
+        
         file_menu = menubar.addMenu('File')
+        
         file_action = QAction('Select file', self)
         file_action.triggered.connect(self.browse_file)
         file_menu.addAction(file_action)
+        
         export_action = QAction('Export', self)
         export_action.triggered.connect(self.export_hashes)
         file_menu.addAction(export_action)
+        
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
+        
         about_menu = menubar.addMenu('About')
+        
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about_dialog)
         about_menu.addAction(about_action)
+        
         changelog_action = QAction('Changelog', self)
         changelog_action.triggered.connect(self.show_changelog_dialog)
         about_menu.addAction(changelog_action)
+        
         sponsor_action = QAction('Sponsor', self)
         sponsor_action.triggered.connect(self.show_sponsor_dialog)
         about_menu.addAction(sponsor_action)
