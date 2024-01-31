@@ -4,6 +4,11 @@ Hash Calculator made with Python
 ![Hash Calculator](Hash_Calculator_v1.4.png)
 
 ## Changelog
+v1.4.1
+
+-More shortcuts
+-Check for update feature
+
 v1.4
 
 -New Export feature

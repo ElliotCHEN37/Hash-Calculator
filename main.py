@@ -19,9 +19,6 @@ class HashCalculator(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-    
-        self.check_for_update()
-        
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         layout = QVBoxLayout()
@@ -86,17 +83,19 @@ class HashCalculator(QMainWindow):
         about_menu.addAction(sponsor_action)
         
         website_action = QAction('Check for update', self)
-        website_action.triggered.connect(self.open_website)
+        website_action.setShortcut('Ctrl+U')
+        website_action.triggered.connect(self.check_for_update)
         about_menu.addAction(website_action)
         
     def check_for_update(self):
         try:
-            url = "https://example.com/cfu.json"
+            url = "https://raw.githubusercontent.com/ElliotCHEN37/Hash-Calculator/main/cfu.json"
             with urllib.request.urlopen(url) as response:
                 data = response.read()
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
+            current_version = '1.4.1'
             if latest_version > current_version:
                 download_url = version_info["download_url"]
                 reply = QMessageBox.question(self, 'New Version Available',
@@ -104,14 +103,12 @@ class HashCalculator(QMainWindow):
                                              'Do you want to download it?',
                                              QMessageBox.Yes | QMessageBox.No)
                 if reply == QMessageBox.Yes:
-                    # 在這裡添加下載新版本的程式碼
+                    QDesktopServices.openUrl(QUrl(download_url))
                     pass
+            elif latest_version == current_version:
+                QMessageBox.information(self, "No Update Available", "You are using the latest version")
         except Exception as e:
-            print(f"Error while checking for update: {e}")
-        
-    def open_website(self):
-        website_url = QUrl('https://github.com/ElliotCHEN37/Hash-Calculator/releases/latest')
-        QDesktopServices.openUrl(website_url)
+            QMessageBox.critical(self, 'Error while checking for update', f'Error while checking for update: {str(e)}')
 
     def browse_file(self):
         options = QFileDialog.Options()
@@ -160,11 +157,11 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.4.1 (02/01/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = "Hash Calculator Version 1.4.1 (01/31/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
         QMessageBox.about(self, "About", about_text)
 
     def show_changelog_dialog(self):
-        changelog_text = "v1.4.1(02/01/24)\nNew\n-More Shortcuts\n\nv1.4 (01/29/24)\nNew\n-Export Feature"
+        changelog_text = "v1.4.1(01/31/24)\nNew\n-More Shortcuts\n-Check for update feature\n\nv1.4 (01/29/24)\nNew\n-Export Feature"
         QMessageBox.about(self, "Changelog", changelog_text)
 
     def show_sponsor_dialog(self):
