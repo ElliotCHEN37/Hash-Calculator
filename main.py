@@ -5,7 +5,10 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, 
     QMessageBox, QMainWindow, QAction, QMenu
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QCoreApplication
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QCoreApplication, QUrl
+from PyQt5.QtGui import QDesktopServices
+import json
+import urllib.request
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -16,6 +19,9 @@ class HashCalculator(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
+    
+        self.check_for_update()
+        
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         layout = QVBoxLayout()
@@ -51,14 +57,17 @@ class HashCalculator(QMainWindow):
         file_menu = menubar.addMenu('File')
         
         file_action = QAction('Select file', self)
+        file_action.setShortcut('Ctrl+I')
         file_action.triggered.connect(self.browse_file)
         file_menu.addAction(file_action)
         
         export_action = QAction('Export', self)
+        export_action.setShortcut('Ctrl+S')
         export_action.triggered.connect(self.export_hashes)
         file_menu.addAction(export_action)
         
         exit_action = QAction('Exit', self)
+        exit_action.setShortcut('Esc')
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
@@ -75,6 +84,34 @@ class HashCalculator(QMainWindow):
         sponsor_action = QAction('Sponsor', self)
         sponsor_action.triggered.connect(self.show_sponsor_dialog)
         about_menu.addAction(sponsor_action)
+        
+        website_action = QAction('Check for update', self)
+        website_action.triggered.connect(self.open_website)
+        about_menu.addAction(website_action)
+        
+    def check_for_update(self):
+        try:
+            url = "https://example.com/cfu.json"
+            with urllib.request.urlopen(url) as response:
+                data = response.read()
+                version_info = json.loads(data)
+
+            latest_version = version_info["latest_version"]
+            if latest_version > current_version:
+                download_url = version_info["download_url"]
+                reply = QMessageBox.question(self, 'New Version Available',
+                                             f'A new version ({latest_version}) is available. '
+                                             'Do you want to download it?',
+                                             QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    # 在這裡添加下載新版本的程式碼
+                    pass
+        except Exception as e:
+            print(f"Error while checking for update: {e}")
+        
+    def open_website(self):
+        website_url = QUrl('https://github.com/ElliotCHEN37/Hash-Calculator/releases/latest')
+        QDesktopServices.openUrl(website_url)
 
     def browse_file(self):
         options = QFileDialog.Options()
@@ -123,11 +160,11 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.4 (01/29/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = "Hash Calculator Version 1.4.1 (02/01/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
         QMessageBox.about(self, "About", about_text)
 
     def show_changelog_dialog(self):
-        changelog_text = "v1.4 (01/29/24)\nNew\n-Export Feature"
+        changelog_text = "v1.4.1(02/01/24)\nNew\n-More Shortcuts\n\nv1.4 (01/29/24)\nNew\n-Export Feature"
         QMessageBox.about(self, "Changelog", changelog_text)
 
     def show_sponsor_dialog(self):
