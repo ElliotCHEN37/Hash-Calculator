@@ -113,8 +113,10 @@ class HashCalculator(QMainWindow):
                 if reply == QMessageBox.Yes:
                     QDesktopServices.openUrl(QUrl(download_url))
                     pass
-            elif latest_version <= current_version:
+            elif latest_version == current_version:
                 QMessageBox.information(self, "No Update Available", "You are using the latest version")
+            elif latest_version <= current_version:
+                QMessageBox.information(self, "No Update Available", "You are using higher version than the latest version")
         except Exception as e:
             QMessageBox.critical(self, 'Error while checking for update', f'Error while checking for update: {str(e)}')
 
@@ -185,8 +187,7 @@ class HashCalculator(QMainWindow):
         QMessageBox.about(self, "About", about_text)
 
     def show_changelog_dialog(self):
-        changelog_url = "https://github.com/ElliotCHEN37/Hash-Calculator/README.md#changelog"
-        QDesktopServices.openUrl(QUrl(changelog_url))
+        QDesktopServices.openUrl(QUrl('https://github.com/ElliotCHEN37/Hash-Calculator?tab=readme-ov-file#changelog'))
 
     def show_sponsor_dialog(self):
         sponsor_text = "李涵博 $0.42 CNY"
