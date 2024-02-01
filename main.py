@@ -3,7 +3,7 @@ import hashlib
 import zlib
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, 
-    QMessageBox, QMainWindow, QAction, QMenu
+    QMessageBox, QMainWindow, QAction
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QCoreApplication, QUrl
 from PyQt5.QtGui import QDesktopServices
@@ -62,6 +62,11 @@ class HashCalculator(QMainWindow):
         export_action.setShortcut('Ctrl+S')
         export_action.triggered.connect(self.export_hashes)
         file_menu.addAction(export_action)
+
+        compare_action = QAction('Compare', self)
+        compare_action.setShortcut('Ctrl+H')
+        compare_action.triggered.connect(self.compare_hashes)
+        file_menu.addAction(compare_action)
         
         exit_action = QAction('Exit', self)
         exit_action.setShortcut('Esc')
@@ -71,22 +76,25 @@ class HashCalculator(QMainWindow):
         about_menu = menubar.addMenu('About')
         
         about_action = QAction('About', self)
+        about_action.setShortcut('Alt+A')
         about_action.triggered.connect(self.show_about_dialog)
         about_menu.addAction(about_action)
         
         changelog_action = QAction('Changelog', self)
+        changelog_action.setShortcut('Alt+C')
         changelog_action.triggered.connect(self.show_changelog_dialog)
         about_menu.addAction(changelog_action)
         
         sponsor_action = QAction('Sponsor', self)
+        sponsor_action.setShortcut('Alt+S')
         sponsor_action.triggered.connect(self.show_sponsor_dialog)
         about_menu.addAction(sponsor_action)
         
-        website_action = QAction('Check for update', self)
-        website_action.setShortcut('Ctrl+U')
-        website_action.triggered.connect(self.check_for_update)
-        about_menu.addAction(website_action)
-        
+        cfu_action = QAction('Check for update', self)
+        cfu_action.setShortcut('Ctrl+U')
+        cfu_action.triggered.connect(self.check_for_update)
+        about_menu.addAction(cfu_action)
+
     def check_for_update(self):
         try:
             url = "https://raw.githubusercontent.com/ElliotCHEN37/Hash-Calculator/main/cfu.json"
@@ -95,7 +103,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.4.1'
+            current_version = '1.5'
             if latest_version > current_version:
                 download_url = version_info["download_url"]
                 reply = QMessageBox.question(self, 'New Version Available',
@@ -105,7 +113,7 @@ class HashCalculator(QMainWindow):
                 if reply == QMessageBox.Yes:
                     QDesktopServices.openUrl(QUrl(download_url))
                     pass
-            elif latest_version == current_version:
+            elif latest_version <= current_version:
                 QMessageBox.information(self, "No Update Available", "You are using the latest version")
         except Exception as e:
             QMessageBox.critical(self, 'Error while checking for update', f'Error while checking for update: {str(e)}')
@@ -120,12 +128,27 @@ class HashCalculator(QMainWindow):
             self.hash_thread.set_file_path(file_path)
             self.setWindowTitle('Hash Calculator - Calculating')
             self.hash_thread.start()
+            messagebox_shown = False
 
     def update_hash_results(self, results):
         self.hash_results_data = results
         for result_label, result in zip(self.hash_results, results):
             result_label.setText(result)
         self.setWindowTitle('Hash Calculator - Done')
+
+        try:
+            with open('hash_values.json', 'r') as json_file:
+                expected_values = json.load(json_file)
+
+            for algo, expected_value, result_label in zip(self.hash_algorithms, expected_values.values(),
+                                                          self.hash_results):
+                if result_label.text() == expected_value:
+                    result_label.setStyleSheet('color: green;')
+                else:
+                    result_label.setStyleSheet('color: red;')
+
+        except Exception as e:
+            print(f"Error while comparing hash values: {e}")
 
     def export_hashes(self):
         if hasattr(self, 'hash_results_data'):
@@ -151,22 +174,53 @@ class HashCalculator(QMainWindow):
 
     def dropEvent(self, event):
         file_path = event.mimeData().urls()[0].toLocalFile()
+        messagebox_shown = False
         self.file_path_line_edit.setText(file_path)
         self.hash_thread.set_file_path(file_path)
         self.setWindowTitle('Hash Calculator - Calculating')
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.4.1 (01/31/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = "Hash Calculator Version 1.5 (02/01/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
         QMessageBox.about(self, "About", about_text)
 
     def show_changelog_dialog(self):
-        changelog_text = "v1.4.1(01/31/24)\nNew\n-More Shortcuts\n-Check for update feature\n\nv1.4 (01/29/24)\nNew\n-Export Feature"
-        QMessageBox.about(self, "Changelog", changelog_text)
+        changelog_url = "https://github.com/ElliotCHEN37/Hash-Calculator/README.md#changelog"
+        QDesktopServices.openUrl(QUrl(changelog_url))
 
     def show_sponsor_dialog(self):
         sponsor_text = "李涵博 $0.42 CNY"
         QMessageBox.about(self, "Sponsor", sponsor_text)
+
+    def compare_hashes(self):
+        try:
+            options = QFileDialog.Options()
+            file_path, _ = QFileDialog.getOpenFileName(
+                self, 'Select JSON file', '', 'JSON Files (*.json)', options=options)
+
+            if file_path:
+                with open(file_path, 'r') as json_file:
+                    expected_values = json.load(json_file)
+
+                mismatched_items = []
+
+                for algo, expected_value, result_label in zip(self.hash_algorithms, expected_values.values(),
+                                                              self.hash_results):
+                    if result_label.text() != expected_value:
+                        mismatched_items.append((algo, expected_value, result_label.text()))
+
+                if mismatched_items:
+                    message = "The following hash values didn't match:\n\n"
+                    for algo, expected_value, computed_value in mismatched_items:
+                        message += f"{algo}:\n  JSON: {expected_value}\n  Computed: {computed_value}\n\n"
+                    result_label.setStyleSheet('color: red;')
+                    QMessageBox.critical(self, "Compare - Didn't match", message)
+                else:
+                    result_label.setStyleSheet('color: green;')
+                    QMessageBox.information(self, "Compare - Matched", "All hash values matched")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Compare - Error", f'Error while comparing hashes values: {str(e)}')
 
 class HashThread(QThread):
     hash_results_ready = pyqtSignal(list)
