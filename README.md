@@ -36,8 +36,8 @@ JSON 文件可以不完整
 ### Environment 環境
 -Python 3<br>
 -PyQt5<br>
-1. Download Python from [www.python.org](<www.python.org>) and install it.<br>
-   從[www.python.org](<www.python.org>)下載並且安裝Python
+1. Download Python from <a href="https://www.python.org">www.python.org</a> and install it.<br>
+   從<a href="https://www.python.org">www.python.org</a>下載並且安裝Python
 2. Run `pip install pyqt5` in terminal or `pip install -r requirements.txt`<br>
    在終端中執行`pip install pyqt5`或者`pip install -r requirements.txt`
 
