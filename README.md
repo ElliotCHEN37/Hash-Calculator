@@ -60,15 +60,32 @@ You can use this function by pressing "Ctrl+S" or going to "File" -> "Export"<br
 You can use this function by pressing "Ctrl+H" or going to "File" -> "Compare"<br>
 你可以通過"Ctrl+H"或者前往"File" -> "Compare"
 
+### DEBUG MODE 除錯模式 (v1.5.1)
+To enable this function, download the "Hash_Calculator_Windows_DEBUG.exe" from latest release
+如果想要啟用該功能，請從"Release"當中下載"Hash_Calculator_Windows_DEBUG.exe"
+
 ## Variants 變體
 #### CLI (Command Line) Edition 命令行版本<br>
 #### Usage 用法
-1. Run the program directly. 直接執行程序
-2. Run the program with argument in terminal. 在終端中以參數啟動程序<br>
-    `Hash_Calculator_CLI.exe <file_path 文件路徑>`<br>
+1. Run the program directly. <br>
+    直接執行程序
+2. Run the program with argument in terminal. <br>
+在終端中以參數啟動程序<br>
+命令`Hash_Calculator_CLI.exe <file_path 文件路徑>`<br>
+
+#### DEBUG EDITION 除錯版本
+#### Usage 用法
+As same as the standard version<br>
+與標準版相同
 
 ## Changelog 更新日志
 #### PyQt5 Edition PyQt5版本
+v1.5.1<br>
+Fix 修復<br>
+-Changelog link 更新日誌連結<br>
+New 新功能<br>
+-Debug mode 除錯模式
+
 v1.5<br>
 New 新功能<br>
 -Compare feature 比較功能<br>
