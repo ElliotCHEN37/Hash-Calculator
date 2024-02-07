@@ -91,17 +91,19 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.5.1'
+            current_version = '1.5.2'
             if latest_version > current_version:
-                print("[INFO]", current_version, "| Update available")
+                print("[INFO]", current_time, "| Update available", current_version)
                 download_url = version_info["download_url"]
                 reply = QMessageBox.question(self, 'New Version Available',
                                              f'A new version ({latest_version}) is available. '
                                              'Do you want to download it?',
                                              QMessageBox.Yes | QMessageBox.No)
                 if reply == QMessageBox.Yes:
-                    print("[INFO]", current_version, "| Redirecting to download url")
+                    print("[INFO]", current_time, "| Redirecting to download url")
                     QDesktopServices.openUrl(QUrl(download_url))
+                else:
+                    print("[INFO]", current_time, "| Update cancelled")
             elif latest_version == current_version:
                 print("[INFO]", current_time, "| No update available")
                 QMessageBox.information(self, "No Update Available", "You are using the latest version")
