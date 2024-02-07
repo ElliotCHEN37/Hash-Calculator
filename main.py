@@ -153,14 +153,21 @@ class HashCalculator(QMainWindow):
         if hasattr(self, 'hash_results_data'):
             options = QFileDialog.Options()
             file_path, _ = QFileDialog.getSaveFileName(
-                self, 'Save File', '', 'Text Files (*.txt)', options=options)
+                self, 'Save File', '', 'JSON Files (*.json);;Text Files (*.txt)', options=options)
 
             if file_path:
                 try:
+                    hash_data = {
+                        "MD5": self.hash_results_data[0],
+                        "SHA1": self.hash_results_data[1],
+                        "SHA256": self.hash_results_data[2],
+                        "SHA512": self.hash_results_data[3],
+                        "CRC32": self.hash_results_data[4]
+                    }
+
                     with open(file_path, 'w') as file:
-                        file.write(f"File Path: {self.file_path_line_edit.text()}\n")
-                        for algo, result in zip(self.hash_algorithms, self.hash_results_data):
-                            file.write(f"{algo}: {result}\n")
+                        json.dump(hash_data, file, indent=4)
+
                     print("[INFO]", current_time, f"| Export to {file_path}")
                     QMessageBox.information(self, "Export Successful", "Hash values exported successfully!")
                 except Exception as e:
@@ -184,7 +191,7 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.5.1 (02/07/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = "Hash Calculator Version 1.5.2 (02/07/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
         print("[INFO]", current_time, "| Show about text")
         QMessageBox.about(self, "About", about_text)
 

@@ -80,6 +80,10 @@ As same as the standard version<br>
 
 ## Changelog 更新日志
 #### PyQt5 Edition PyQt5版本
+v1.5.2<br>
+New 新功能<br>
+-New export format 新的匯出格式
+
 v1.5.1<br>
 Fix 修復<br>
 -Changelog link 更新日誌連結<br>
