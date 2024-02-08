@@ -81,6 +81,11 @@ As same as the standard version<br>
 
 ## Changelog 更新日志
 #### PyQt5 Edition PyQt5版本
+v1.5.4<br>
+Fix 修復<br>
+-Fix compare function 修復比較功能<br>
+-Fix BUGs 修正程錯
+
 v1.5.3<br>
 Fix 修復<br>
 -Fix compare logic 修復比較邏輯

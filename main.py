@@ -3,13 +3,13 @@ import hashlib
 import zlib
 import json
 import urllib.request
+import time
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog,
     QMessageBox, QMainWindow, QAction
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QUrl
+from PyQt5.QtCore import QThread, pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
-import time
 
 current_time = time.ctime()
 print("[INFO]", current_time, "| Start")
@@ -51,9 +51,13 @@ class HashCalculator(QMainWindow):
         self.hash_thread = HashThread(self)
         self.hash_thread.hash_results_ready.connect(self.update_hash_results)
 
+        self.create_menus()
+
+    def create_menus(self):
         menubar = self.menuBar()
 
         file_menu = menubar.addMenu('File')
+        about_menu = menubar.addMenu('About')
 
         file_actions = [
             ('Select file', 'Ctrl+I', self.browse_file),
@@ -62,25 +66,21 @@ class HashCalculator(QMainWindow):
             ('Exit', 'Esc', self.close)
         ]
 
-        for action_name, shortcut, method in file_actions:
-            action = QAction(action_name, self)
-            action.setShortcut(shortcut)
-            action.triggered.connect(method)
-            file_menu.addAction(action)
-
-        about_menu = menubar.addMenu('About')
-
         about_actions = [
             ('About', 'Alt+A', self.show_about_dialog),
             ('Changelog', 'Alt+C', self.show_changelog_dialog),
             ('Check for update', 'Ctrl+U', self.check_for_update)
         ]
 
-        for action_name, shortcut, method in about_actions:
+        self.add_actions_to_menu(file_menu, file_actions)
+        self.add_actions_to_menu(about_menu, about_actions)
+
+    def add_actions_to_menu(self, menu, actions):
+        for action_name, shortcut, method in actions:
             action = QAction(action_name, self)
             action.setShortcut(shortcut)
             action.triggered.connect(method)
-            about_menu.addAction(action)
+            menu.addAction(action)
 
     def check_for_update(self):
         print("[INFO]", current_time, "| Checking for update")
@@ -91,29 +91,32 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.5.3'
+            current_version = '1.5.4'
             if latest_version > current_version:
-                print("[INFO]", current_time, "| Update available", current_version)
-                download_url = version_info["download_url"]
-                reply = QMessageBox.question(self, 'New Version Available',
-                                             f'A new version ({latest_version}) is available. '
-                                             'Do you want to download it?',
-                                             QMessageBox.Yes | QMessageBox.No)
-                if reply == QMessageBox.Yes:
-                    print("[INFO]", current_time, "| Redirecting to download url")
-                    QDesktopServices.openUrl(QUrl(download_url))
-                else:
-                    print("[INFO]", current_time, "| Update cancelled")
+                self.prompt_update(latest_version, version_info["download_url"])
             elif latest_version == current_version:
-                print("[INFO]", current_time, "| No update available")
                 QMessageBox.information(self, "No Update Available", "You are using the latest version")
             elif latest_version <= current_version:
-                print("[INFO]", current_time, "| You are using a higher version")
                 QMessageBox.information(self, "No Update Available",
                                         "You are using a higher version than the latest version")
         except Exception as e:
-            print("[ERROR]", current_time, f"| Error: {str(e)}")
-            QMessageBox.critical(self, 'Error while checking for update', f'Error while checking for update: {str(e)}')
+            self.show_update_error(str(e))
+
+    def prompt_update(self, latest_version, download_url):
+        print("[INFO]", current_time, "| Update available", latest_version)
+        reply = QMessageBox.question(self, 'New Version Available',
+                                     f'A new version ({latest_version}) is available. '
+                                     'Do you want to download it?',
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            print("[INFO]", current_time, "| Redirecting to download url")
+            QDesktopServices.openUrl(QUrl(download_url))
+        else:
+            print("[INFO]", current_time, "| Update cancelled")
+
+    def show_update_error(self, error_msg):
+        print("[ERROR]", current_time, f"| Error: {error_msg}")
+        QMessageBox.critical(self, 'Error while checking for update', f'Error while checking for update: {error_msg}')
 
     def browse_file(self):
         options = QFileDialog.Options()
@@ -151,8 +154,11 @@ class HashCalculator(QMainWindow):
             print("[INFO]", current_time, '| "hash_values.json" is not available')
             pass
         except Exception as e:
-            print("[ERROR]", current_time, f"| Error: {str(e)}")
-            QMessageBox.critical(self, 'Error while loading hash values', f'Error while loading hash values: {str(e)}')
+            self.show_load_hash_values_error(str(e))
+
+    def show_load_hash_values_error(self, error_msg):
+        print("[ERROR]", current_time, f"| Error: {error_msg}")
+        QMessageBox.critical(self, 'Error while loading hash values', f'Error while loading hash values: {error_msg}')
 
     def export_hashes(self):
         if hasattr(self, 'hash_results_data'):
@@ -162,13 +168,8 @@ class HashCalculator(QMainWindow):
 
             if file_path:
                 try:
-                    hash_data = {
-                        "MD5": self.hash_results_data[0],
-                        "SHA1": self.hash_results_data[1],
-                        "SHA256": self.hash_results_data[2],
-                        "SHA512": self.hash_results_data[3],
-                        "CRC32": self.hash_results_data[4]
-                    }
+                    hash_data = {algo: hash_value for algo, hash_value in
+                                 zip(self.hash_algorithms, self.hash_results_data)}
 
                     with open(file_path, 'w') as file:
                         json.dump(hash_data, file, indent=4)
@@ -176,11 +177,14 @@ class HashCalculator(QMainWindow):
                     print("[INFO]", current_time, f"| Export to {file_path}")
                     QMessageBox.information(self, "Export Successful", "Hash values exported successfully!")
                 except Exception as e:
-                    print("[ERROR]", current_time, f"| Error: {str(e)}")
-                    QMessageBox.critical(self, "Export Error", f"An error occurred while exporting:\n{str(e)}")
+                    self.show_export_error(str(e))
         else:
             print("[INFO]", current_time, f"| No data to export")
             QMessageBox.warning(self, "No Data", "No hash values to export. Calculate hash values first.")
+
+    def show_export_error(self, error_msg):
+        print("[ERROR]", current_time, f"| Error: {error_msg}")
+        QMessageBox.critical(self, "Export Error", f"An error occurred while exporting:\n{error_msg}")
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -196,7 +200,9 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.5.3 (02/08/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = ("Hash Calculator Version 1.5.4 (02/08/24) By ElliotCHEN\n\nA simple hash value calculation "
+                      "program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is "
+                      "licensed under MIT License")
         print("[INFO]", current_time, "| Show about text")
         QMessageBox.about(self, "About", about_text)
 
@@ -218,10 +224,15 @@ class HashCalculator(QMainWindow):
 
                 mismatched_items = []
 
-                for algo, expected_value in expected_values.items():
-                    computed_value = self.hash_results_data[self.hash_algorithms.index(algo)]
-                    if computed_value != expected_value:
-                        mismatched_items.append((algo, expected_value, computed_value))
+                for algo, expected_value, result_label in zip(self.hash_algorithms, expected_values.values(),
+                                                              self.hash_results):
+                    computed_value = result_label.text()
+                    if computed_value == expected_values.get(algo, ""):
+                        result_label.setStyleSheet('color: green;')
+                    else:
+                        result_label.setStyleSheet('color: red;')
+                        mismatched_items.append((algo, expected_values.get(algo, ""), computed_value))
+                    print("[INFO]", current_time, f'| "hash_values.json" loaded')
 
                 if mismatched_items:
                     message = "The following hash values didn't match:\n\n"
@@ -234,32 +245,11 @@ class HashCalculator(QMainWindow):
                     QMessageBox.information(self, "Compare - Matched", "All hash values matched")
 
         except Exception as e:
-            print("[ERROR]", current_time, f"| Error: {str(e)}")
-            QMessageBox.critical(self, "Compare - Error", f'Error while comparing hashes values: {str(e)}')
+            self.show_compare_error(str(e))
 
-    def export_hashes(self):
-        if hasattr(self, 'hash_results_data'):
-            options = QFileDialog.Options()
-            file_path, _ = QFileDialog.getSaveFileName(
-                self, 'Save File', '', 'JSON Files (*.json);;Text Files (*.txt)', options=options)
-
-            if file_path:
-                try:
-                    hash_data = {algo: hash_value for algo, hash_value in
-                                 zip(self.hash_algorithms, self.hash_results_data)}
-
-                    with open(file_path, 'w') as file:
-                        json.dump(hash_data, file, indent=4)
-
-                    print("[INFO]", current_time, f"| Export to {file_path}")
-                    QMessageBox.information(self, "Export Successful", "Hash values exported successfully!")
-                except Exception as e:
-                    print("[ERROR]", current_time, f"| Error: {str(e)}")
-                    QMessageBox.critical(self, "Export Error", f"An error occurred while exporting:\n{str(e)}")
-        else:
-            print("[INFO]", current_time, f"| No data to export")
-            QMessageBox.warning(self, "No Data", "No hash values to export. Calculate hash values first.")
-
+    def show_compare_error(self, error_msg):
+        print("[ERROR]", current_time, f"| Error: {error_msg}")
+        QMessageBox.critical(self, "Compare - Error", f'Error while comparing hashes values: {error_msg}')
 
 class HashThread(QThread):
     hash_results_ready = pyqtSignal(list)
