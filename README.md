@@ -4,7 +4,7 @@ A simple hash value calculation program written in PyQt5<br>
 
 ![Hash Calculator](Hash_Calculator_v1.5.png)
 
-### Special Feature in v1.5+ 1.5及更高版本中的特殊功能
+### Special Feature in v1.5+ 1.5及更高版本中的特殊功能 (May be removed in the future 可能會在未來移除)
 If there is a "hash_values.json" available in the working directory, Hash_Calculator will auto compare the results, and change the color* of results in GUI windows.<br>
 如果在工作目錄下有"hash_values.json"，那麼Hash_Calculator將會自動對比結果並且改變圖形化介面的結果顏色*<br>
 *Green Texts: Matched, Red Texts: Didn't match 綠色字體：相符，紅色字體：不符<br>
@@ -21,15 +21,16 @@ If there is a "hash_values.json" available in the working directory, Hash_Calcul
 
 ```
 <br>
-Values can be missing<br>
-值可以缺失
+Keys can be missing<br>
+鍵可以缺失
 
 ## Build and Environment 構建以及環境
 ### Environment 環境
 -Python 3<br>
 -PyQt5<br>
-1. Download Python from <a href="https://www.python.org">www.python.org</a> and install it.<br>
-   從<a href="https://www.python.org">www.python.org</a>下載並且安裝Python
+
+1. Download Python 3 from <a href="https://www.python.org">www.python.org</a> and install it.<br>
+   從<a href="https://www.python.org">www.python.org</a>下載並且安裝Python 3
 2. Run `pip install pyqt5` in terminal or `pip install -r requirements.txt`<br>
    在終端中執行`pip install pyqt5`或者`pip install -r requirements.txt`
 
@@ -80,6 +81,10 @@ As same as the standard version<br>
 
 ## Changelog 更新日志
 #### PyQt5 Edition PyQt5版本
+v1.5.3<br>
+Fix 修復<br>
+-Fix compare logic 修復比較邏輯
+
 v1.5.2<br>
 New 新功能<br>
 -New export format 新的匯出格式

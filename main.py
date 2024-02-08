@@ -91,7 +91,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.5.2'
+            current_version = '1.5.3'
             if latest_version > current_version:
                 print("[INFO]", current_time, "| Update available", current_version)
                 download_url = version_info["download_url"]
@@ -141,15 +141,18 @@ class HashCalculator(QMainWindow):
 
             for algo, expected_value, result_label in zip(self.hash_algorithms, expected_values.values(),
                                                           self.hash_results):
-                if result_label.text() == expected_value:
+                if result_label.text() == expected_values.get(algo, ""):
                     result_label.setStyleSheet('color: green;')
                 else:
                     result_label.setStyleSheet('color: red;')
                 print("[INFO]", current_time, f'| "hash_values.json" loaded')
 
-        except:
+        except FileNotFoundError:
             print("[INFO]", current_time, '| "hash_values.json" is not available')
             pass
+        except Exception as e:
+            print("[ERROR]", current_time, f"| Error: {str(e)}")
+            QMessageBox.critical(self, 'Error while loading hash values', f'Error while loading hash values: {str(e)}')
 
     def export_hashes(self):
         if hasattr(self, 'hash_results_data'):
@@ -193,7 +196,7 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = "Hash Calculator Version 1.5.2 (02/07/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
+        about_text = "Hash Calculator Version 1.5.3 (02/08/24) By ElliotCHEN\n\nA simple hash value calculation program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is licensed under MIT License"
         print("[INFO]", current_time, "| Show about text")
         QMessageBox.about(self, "About", about_text)
 
@@ -215,10 +218,10 @@ class HashCalculator(QMainWindow):
 
                 mismatched_items = []
 
-                for algo, expected_value, result_label in zip(self.hash_algorithms, expected_values.values(),
-                                                              self.hash_results):
-                    if result_label.text() != expected_value:
-                        mismatched_items.append((algo, expected_value, result_label.text()))
+                for algo, expected_value in expected_values.items():
+                    computed_value = self.hash_results_data[self.hash_algorithms.index(algo)]
+                    if computed_value != expected_value:
+                        mismatched_items.append((algo, expected_value, computed_value))
 
                 if mismatched_items:
                     message = "The following hash values didn't match:\n\n"
@@ -231,8 +234,31 @@ class HashCalculator(QMainWindow):
                     QMessageBox.information(self, "Compare - Matched", "All hash values matched")
 
         except Exception as e:
-            print("[ERROR]", current_time, f"Error: {str(e)}")
+            print("[ERROR]", current_time, f"| Error: {str(e)}")
             QMessageBox.critical(self, "Compare - Error", f'Error while comparing hashes values: {str(e)}')
+
+    def export_hashes(self):
+        if hasattr(self, 'hash_results_data'):
+            options = QFileDialog.Options()
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, 'Save File', '', 'JSON Files (*.json);;Text Files (*.txt)', options=options)
+
+            if file_path:
+                try:
+                    hash_data = {algo: hash_value for algo, hash_value in
+                                 zip(self.hash_algorithms, self.hash_results_data)}
+
+                    with open(file_path, 'w') as file:
+                        json.dump(hash_data, file, indent=4)
+
+                    print("[INFO]", current_time, f"| Export to {file_path}")
+                    QMessageBox.information(self, "Export Successful", "Hash values exported successfully!")
+                except Exception as e:
+                    print("[ERROR]", current_time, f"| Error: {str(e)}")
+                    QMessageBox.critical(self, "Export Error", f"An error occurred while exporting:\n{str(e)}")
+        else:
+            print("[INFO]", current_time, f"| No data to export")
+            QMessageBox.warning(self, "No Data", "No hash values to export. Calculate hash values first.")
 
 
 class HashThread(QThread):
@@ -267,7 +293,7 @@ class HashThread(QThread):
 
                 self.hash_results_ready.emit(results)
             except Exception as e:
-                print("[ERROR]", current_time, f"Error: {str(e)}")
+                print("[ERROR]", current_time, f"| Error: {str(e)}")
                 self.hash_results_ready.emit(['Error: ' + str(e)])
         else:
             print("[WARN]", current_time, f"| Please select a file first")
