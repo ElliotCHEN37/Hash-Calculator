@@ -19,7 +19,7 @@ A simple hash value calculation program written in PyQt5<br>
 
 ![Hash Calculator](Hash_Calculator_v1.5.png)
 
-### Special Feature in v1.5+ 1.5及更高版本中的特殊功能 (May be removed in the future 可能會在未來移除)
+### Special Feature in v1.5+ 1.5及更高版本中的特殊功能
 
 If there is a "hash_values.json" available in the working directory, Hash_Calculator will auto compare the results, and
 change the color* of results in GUI windows.<br>
@@ -68,7 +68,7 @@ Keys can be missing<br>
    -Add`--noconsole`if you want to hide the terminal<br>
    如果你想要隱藏終端窗口，請添加`--noconsole`
 
-#### CLI Version 命令行版本
+#### CLI Version 命令行版本 NO LONGER SUPPORT 不再支援
 
 1. Run`pip install pyinstaller` (If you installed pyinstaller, just skip it)<br>
    執行`pip install pyinstaller`（如果你已經安裝過，請跳過）<br>
@@ -94,6 +94,11 @@ You can use this function by pressing "Ctrl+H" or going to "File" -> "Compare"<b
 To enable this function, download the "Hash_Calculator_Windows_DEBUG.exe" from latest release
 如果想要啟用該功能，請從"Release"當中下載"Hash_Calculator_Windows_DEBUG.exe"
 
+### ONLINE COMPARE 線上對比 (v1.5.5)
+
+You can use this function by pressing "Ctrl+Alt+H" or going to "File" -> "Online Compare"<br>
+你可以通過"Ctrl+Alt+H"或者前往"File" -> "Compare"
+
 ## Variants 變體
 
 #### CLI (Command Line) Edition 命令行版本<br>
@@ -116,6 +121,9 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+v1.5.5<br>
+New 新功能<br>
+-Online Compare 線上對比
 
 v1.5.4<br>
 Fix 修復<br>
@@ -151,7 +159,7 @@ v1.4<br>
 New 新功能<BR>
 -Export 匯出
 
-#### CLI Edition 命令行版本
+#### CLI Edition 命令行版本 NO LONGER SUPPORT 不再支援
 
 v1.0<br>
 Initial Release 初版
