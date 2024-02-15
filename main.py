@@ -1,15 +1,16 @@
-import sys
 import hashlib
-import zlib
 import json
-import urllib.request
+import sys
 import time
+import urllib.request
+import zlib
+
+from PyQt5.QtCore import QThread, pyqtSignal, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog,
     QMessageBox, QMainWindow, QAction, QInputDialog
 )
-from PyQt5.QtCore import QThread, pyqtSignal, QUrl
-from PyQt5.QtGui import QDesktopServices
 
 current_time = time.ctime()
 print("[INFO]", current_time, "| Start")

@@ -167,3 +167,6 @@ Initial Release 初版
 ## About 關於
 
 [LICENSE 授權](LICENSE.txt)
+
+
+![Google Fonts](gfonts.png)
