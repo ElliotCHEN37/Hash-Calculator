@@ -109,7 +109,7 @@ You can use this function by pressing "Ctrl+Alt+H" or going to "File" -> "Online
    直接執行程序
 2. Run the program with argument in terminal. <br>
    在終端中以參數啟動程序<br>
-   命令`Hash_Calculator_CLI.exe <file_path 文件路徑>`<br>
+   `Hash_Calculator_CLI.exe <file_path 文件路徑>`<br>
 
 #### DEBUG EDITION 除錯版本
 
@@ -121,6 +121,12 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+v1.6<br>
+New 新功能<br>
+-Support export results as TXT or JSON 支援以TXT或者JSON格式匯出結果<br>
+-Clean up and re-format some codes 整理並格式化部分代碼<br>
+-App icon from Google Fonts 從Google Fonts來的軟體圖標
+
 v1.5.5<br>
 New 新功能<br>
 -Online Compare 線上對比

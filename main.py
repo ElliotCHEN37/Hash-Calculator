@@ -93,7 +93,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.5.5'
+            current_version = '1.6'
             if latest_version > current_version:
                 self.prompt_update(latest_version, version_info["download_url"])
             elif latest_version == current_version:
@@ -166,15 +166,21 @@ class HashCalculator(QMainWindow):
         if hasattr(self, 'hash_results_data'):
             options = QFileDialog.Options()
             file_path, _ = QFileDialog.getSaveFileName(
-                self, 'Save File', '', 'JSON Files (*.json);;Text Files (*.txt)', options=options)
+                self, 'Save File', '', 'Text Files (*.txt);;JSON Files (*.json)', options=options)
 
             if file_path:
                 try:
-                    hash_data = {algo: hash_value for algo, hash_value in
-                                 zip(self.hash_algorithms, self.hash_results_data)}
+                    if file_path.endswith('.json'):
+                        hash_data = {algo: hash_value for algo, hash_value in
+                                     zip(self.hash_algorithms, self.hash_results_data)}
 
-                    with open(file_path, 'w') as file:
-                        json.dump(hash_data, file, indent=4)
+                        with open(file_path, 'w') as file:
+                            json.dump(hash_data, file, indent=4)
+                    elif file_path.endswith('.txt'):
+                        with open(file_path, 'w') as file:
+                            file.write(f"File Path: {self.file_path_line_edit.text()}\n")
+                            for algo, hash_value in zip(self.hash_algorithms, self.hash_results_data):
+                                file.write(f"{algo}: {hash_value}\n")
 
                     print("[INFO]", current_time, f"| Export to {file_path}")
                     QMessageBox.information(self, "Export Successful", "Hash values exported successfully!")
@@ -202,9 +208,9 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = ("Hash Calculator Version 1.5.5 (02/08/24) By ElliotCHEN\n\nA simple hash value calculation "
+        about_text = ("Hash Calculator Version 1.6 (02/15/24) By ElliotCHEN\n\nA simple hash value calculation "
                       "program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is "
-                      "licensed under MIT License")
+                      "licensed under MIT License\nApp icon is from Google Fonts (Material Icons)")
         print("[INFO]", current_time, "| Show about text")
         QMessageBox.about(self, "About", about_text)
 
