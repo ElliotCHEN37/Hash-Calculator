@@ -77,28 +77,6 @@ Keys can be missing<br>
    -Add`--onefile`if you want a single file version<br>
    如果你只想要組建單個可執行文件，請添加`--onefile`<br>
 
-## NEW FEATURES 新功能
-
-### EXPORT 匯出 (v1.4)
-
-You can use this function by pressing "Ctrl+S" or going to "File" -> "Export"<br>
-你可以通過"Ctrl+S"或者前往"File" -> "Export"
-
-### COMPARE 比較 (v1.5)
-
-You can use this function by pressing "Ctrl+H" or going to "File" -> "Compare"<br>
-你可以通過"Ctrl+H"或者前往"File" -> "Compare"
-
-### DEBUG MODE 除錯模式 (v1.5.1)
-
-To enable this function, download the "Hash_Calculator_Windows_DEBUG.exe" from latest release
-如果想要啟用該功能，請從"Release"當中下載"Hash_Calculator_Windows_DEBUG.exe"
-
-### ONLINE COMPARE 線上對比 (v1.5.5)
-
-You can use this function by pressing "Ctrl+Alt+H" or going to "File" -> "Online Compare"<br>
-你可以通過"Ctrl+Alt+H"或者前往"File" -> "Compare"
-
 ## Variants 變體
 
 #### CLI (Command Line) Edition 命令行版本<br>
@@ -121,6 +99,14 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+
+v1.7<br>
+New 新功能<br>
+-Support text input 支援文字輸入<br>
+!!!BIG CHANGE 重大改動!!!<br>
+-NO LONGER SUPPORT "DRAG AND DROP" FUNCTION 不再支援拖拽功能<br>
+-REMOVE BROWSE BUTTON 移除瀏覽按鈕 (It may be restored in the next version 可能會在下一個版本中恢復)
+
 v1.6<br>
 New 新功能<br>
 -Support export results as TXT or JSON 支援以TXT或者JSON格式匯出結果<br>
