@@ -40,8 +40,8 @@ change the color* of results in GUI windows.<br>
 ```
 
 <br>
-Keys can be missing<br>
-鍵可以缺失
+Keys can't be missing<br>
+鍵不可以缺失
 
 ## Build and Environment 構建以及環境
 
@@ -99,6 +99,12 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+
+v1.8<br>
+This version is based on v1.6 but include v1.7's function 該版本基於v1.6但是擁有完整的v1.7功能<br>
+New 新功能
+-Re-support drag and drop 重新支援拖拽<br>
+-Adjust the GUI 調整GUI介面
 
 v1.7<br>
 New 新功能<br>
