@@ -19,14 +19,19 @@ A simple hash value calculation program written in PyQt5<br>
 
 ![Hash Calculator](Hash_Calculator_v1.5.png)
 
-### Special Feature in v1.5+ 1.5及更高版本中的特殊功能
+## NO LONGER SUPPORT FEATURES LIST 不再支援的功能的清單
+
+-[Auto Compare 自動比較](#auto-compare-自動比較-v15-v18)<br>
+-[JSON Compare JSON對比](#JSON-file-format-JSON-文件格式)
+
+### Auto Compare 自動比較 (v1.5-v1.8)
 
 If there is a "hash_values.json" available in the working directory, Hash_Calculator will auto compare the results, and
 change the color* of results in GUI windows.<br>
 如果在工作目錄下有"hash_values.json"，那麼Hash_Calculator將會自動對比結果並且改變圖形化介面的結果顏色*<br>
 *Green Texts: Matched, Red Texts: Didn't match 綠色字體：相符，紅色字體：不符<br>
 
-### JSON file format JSON文件格式
+### JSON file format JSON 文件格式
 
 ```JSON
 {
@@ -100,6 +105,12 @@ As same as the standard version<br>
 
 #### PyQt5 Edition PyQt5版本
 
+v1.9<br>
+!!!BIG UPDATE 重大更新!!!<br>
+-RE-MADE COMPARE FEATURE 重製Compare功能<br>
+FIX 修復<br>
+-Icon will show in the title bar and the task bar now 現在標誌會在標題列與工作列中顯示
+
 v1.8<br>
 This version is based on v1.6 but include v1.7's function 該版本基於v1.6但是擁有完整的v1.7功能<br>
 New 新功能
@@ -165,6 +176,5 @@ Initial Release 初版
 ## About 關於
 
 [LICENSE 授權](LICENSE.txt)
-
 
 ![Google Fonts](gfonts.png)
