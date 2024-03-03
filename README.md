@@ -17,7 +17,7 @@ A simple hash value calculation program written in PyQt5<br>
     </tr>
 </table>
 
-![Hash Calculator](Hash_Calculator_v1.5.png)
+![Hash Calculator](v1.9.1.png)
 
 ## NO LONGER SUPPORT FEATURES LIST 不再支援的功能的清單
 
