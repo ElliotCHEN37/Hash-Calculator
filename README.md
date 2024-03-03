@@ -9,7 +9,7 @@ A simple hash value calculation program written in PyQt5<br>
             <a href="https://github.com/ElliotCHEN37/Hash-Calculator/releases/latest/download/Hash_Calculator_Windows.exe"><img src="download.png" alt="Download Standard version" /></a>
         </td>
         <td>
-            <a href="https://github.com/ElliotCHEN37/Hash-Calculator/releases/latest/download/Hash_Calculator_Windows_DEBUG.exe"><img src="download_debug.png" alt="Download Debug version" /></a>
+            <a href="https://github.com/ElliotCHEN37/Hash-Calculator/releases/download/v1.9/Hash_Calculator_Windows_DEBUG.exe"><img src="download_debug.png" alt="Download Debug version" /></a>
         </td>
         <td>
             <a href="https://github.com/ElliotCHEN37/Hash-Calculator/releases/download/v1.5.1/Hash_Calculator_Windows_CLI.exe"><img src="download_cli.png" alt="Download Command line version" /></a>
@@ -94,7 +94,7 @@ Keys can't be missing<br>
    在終端中以參數啟動程序<br>
    `Hash_Calculator_CLI.exe <file_path 文件路徑>`<br>
 
-#### DEBUG EDITION 除錯版本
+#### DEBUG EDITION 除錯版本 NO LONGER SUPPORT 不再支援
 
 #### Usage 用法
 
@@ -104,6 +104,12 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+
+v1.9.1<br>
+NEW 新功能<br>
+-Add a progress bar 增加了進度列<br>
+FIX 修正<Br>
+-Fix some BUGs 修正一些錯誤
 
 v1.9<br>
 !!!BIG UPDATE 重大更新!!!<br>

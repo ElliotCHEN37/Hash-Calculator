@@ -5,22 +5,13 @@ import sys
 import urllib.request
 import zlib
 
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog,
+    QApplication, QLabel, QPushButton, QFileDialog,
     QMessageBox, QMainWindow, QAction, QLineEdit, QDialog, QHBoxLayout, QComboBox
 )
-
-try:
-    from ctypes import windll
-
-    appid = 'ElliotCHEN.Hash Calculator.Hash Calculator.v1.9'
-    windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
-except ImportError:
-    pass
-
 
 class HashCalculator(QMainWindow):
     def __init__(self):
@@ -29,9 +20,17 @@ class HashCalculator(QMainWindow):
         self.compare_dialog = None
 
     def init_ui(self):
-        self.central_widget = QWidget()
+        self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
-        layout = QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
+
+        self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_bar.setRange(0, 0)
+        self.progress_bar.setValue(0)
+
+        self.hash_thread = HashThread(self)
+        self.hash_thread.hash_results_ready.connect(self.update_hash_results)
+        self.hash_thread.progress_updated.connect(self.update_progress_bar)
 
         self.file_path_label = QLabel('Selected File:')
         self.file_path_line_edit = QLabel()
@@ -48,6 +47,7 @@ class HashCalculator(QMainWindow):
         layout.addWidget(self.file_path_label)
         layout.addWidget(self.file_path_line_edit)
         layout.addWidget(self.calculate_button)
+        layout.addWidget(self.progress_bar)
 
         self.hash_algorithms = ['MD5', 'SHA1', 'SHA256', 'SHA512', 'CRC32']
         self.hash_labels = [QLabel(f'{algorithm}:') for algorithm in self.hash_algorithms]
@@ -99,7 +99,10 @@ class HashCalculator(QMainWindow):
             menu.addAction(action)
 
     def calculate_hash_text(self):
+        global hash_value
+        self.clear_hash_results()
         input_text = self.text_input_line_edit.text()
+        self.progress_bar.setRange(0, 100)
         if input_text:
             results = []
             try:
@@ -129,7 +132,7 @@ class HashCalculator(QMainWindow):
             self.compare_dialog = CompareHashDialog(self)
         if self.compare_dialog.exec_() == QDialog.Accepted:
             algorithm = self.compare_dialog.algorithm_combo.currentText()
-            user_hash = self.compare_dialog.hash_input_line_edit.text()
+            user_hash = self.compare_dialog.hash_input_line_edit.text().lower()  # Convert to lowercase
 
             if not user_hash:
                 QMessageBox.warning(self, "No Text", "Please enter hash value to compare.")
@@ -138,7 +141,7 @@ class HashCalculator(QMainWindow):
             if hasattr(self, 'hash_results_data'):
                 try:
                     index = self.hash_algorithms.index(algorithm)
-                    calculated_hash = self.hash_results_data[index]
+                    calculated_hash = self.hash_results_data[index].lower()  # Convert to lowercase
 
                     if calculated_hash == user_hash:
                         QMessageBox.information(self, "Hash Comparison", "Hash values match!")
@@ -157,7 +160,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.9'
+            current_version = '1.9.1'
             if latest_version > current_version:
                 self.prompt_update(latest_version, version_info["download_url"])
             elif latest_version == current_version:
@@ -187,16 +190,28 @@ class HashCalculator(QMainWindow):
             self, 'Select file', '', 'All Files (*)', options=options)
 
         if file_path:
+            self.clear_hash_results()
             self.file_path_line_edit.setText(file_path)
             self.hash_thread.set_file_path(file_path)
             self.setWindowTitle('Hash Calculator - Calculating')
+            self.progress_bar.setRange(0, 0)
             self.hash_thread.start()
+
+    def clear_hash_results(self):
+        self.hash_results_data = None
+        for result_label in self.hash_results:
+            result_label.clear()
+
+    def update_progress_bar(self, value):
+        self.progress_bar.setValue(value)
 
     def update_hash_results(self, results):
         self.hash_results_data = results
         for result_label, result in zip(self.hash_results, results):
             result_label.setText(result)
         self.setWindowTitle('Hash Calculator - Done')
+        self.progress_bar.setRange(0, 100)
+        self.update_progress_bar(100)
 
     def export_hashes(self):
         if hasattr(self, 'hash_results_data'):
@@ -239,7 +254,7 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = ("Hash Calculator Version 1.9 (03/02/24) By ElliotCHEN\n\nA simple hash value calculation "
+        about_text = ("Hash Calculator Version 1.9.1 (03/03/24) By ElliotCHEN\n\nA simple hash value calculation "
                       "program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is "
                       "licensed under MIT License\nApp icon is from Google Fonts (Material Icons)")
         QMessageBox.about(self, "About", about_text)
@@ -251,6 +266,7 @@ class HashCalculator(QMainWindow):
 
 class HashThread(QThread):
     hash_results_ready = pyqtSignal(list)
+    progress_updated = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -278,6 +294,9 @@ class HashThread(QThread):
                             hash_value = format(zlib.crc32(content) & 0xFFFFFFFF, '08x')
 
                         results.append(hash_value)
+
+                        progress = int((len(results) / 5) * 100)
+                        self.progress_updated.emit(progress)  # 发射信号，通知进度条更新
 
                 self.hash_results_ready.emit(results)
             except Exception as e:
@@ -308,7 +327,6 @@ class CompareHashDialog(QDialog):
         self.setLayout(layout)
 
     def compare_hashes(self):
-        algorithm = self.algorithm_combo.currentText()
         user_hash = self.hash_input_line_edit.text()
 
         if not user_hash:
