@@ -4,6 +4,7 @@ import os
 import sys
 import urllib.request
 import zlib
+import qdarkstyle
 
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl
@@ -13,11 +14,14 @@ from PyQt5.QtWidgets import (
     QMessageBox, QMainWindow, QAction, QLineEdit, QDialog, QHBoxLayout, QComboBox
 )
 
+
 class HashCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
         self.compare_dialog = None
+        self.dark_mode_enabled = False
+        self.toggle_dark_mode_action = None
 
     def init_ui(self):
         self.central_widget = QtWidgets.QWidget()
@@ -72,6 +76,7 @@ class HashCalculator(QMainWindow):
         menubar = self.menuBar()
 
         file_menu = menubar.addMenu('File')
+        view_menu = menubar.addMenu('View')
         about_menu = menubar.addMenu('About')
 
         file_actions = [
@@ -82,6 +87,10 @@ class HashCalculator(QMainWindow):
             ('Exit', 'Esc', self.close)
         ]
 
+        view_actions = [
+            ('Toggle Dark Mode', 'Ctrl+D', self.toggle_dark_mode)
+        ]
+
         about_actions = [
             ('About', 'Alt+A', self.show_about_dialog),
             ('Changelog', 'Alt+C', self.show_changelog_dialog),
@@ -89,6 +98,7 @@ class HashCalculator(QMainWindow):
         ]
 
         self.add_actions_to_menu(file_menu, file_actions)
+        self.add_actions_to_menu(view_menu, view_actions)
         self.add_actions_to_menu(about_menu, about_actions)
 
     def add_actions_to_menu(self, menu, actions):
@@ -97,6 +107,14 @@ class HashCalculator(QMainWindow):
             action.setShortcut(shortcut)
             action.triggered.connect(method)
             menu.addAction(action)
+
+    def toggle_dark_mode(self):
+        self.dark_mode_enabled = not self.dark_mode_enabled
+
+        if self.dark_mode_enabled:
+            self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        else:
+            self.setStyleSheet('')
 
     def calculate_hash_text(self):
         global hash_value
@@ -160,7 +178,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '1.9.1'
+            current_version = '2.0'
             if latest_version > current_version:
                 self.prompt_update(latest_version, version_info["download_url"])
             elif latest_version == current_version:
@@ -254,7 +272,7 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = ("Hash Calculator Version 1.9.1 (03/03/24) By ElliotCHEN\n\nA simple hash value calculation "
+        about_text = ("Hash Calculator Version 2.0 (03/04/24) By ElliotCHEN\n\nA simple hash value calculation "
                       "program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is "
                       "licensed under MIT License\nApp icon is from Google Fonts (Material Icons)")
         QMessageBox.about(self, "About", about_text)

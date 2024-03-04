@@ -17,7 +17,7 @@ A simple hash value calculation program written in PyQt5<br>
     </tr>
 </table>
 
-![Hash Calculator](v1.9.1.png)
+![Hash Calculator](2.0.png)
 
 ## NO LONGER SUPPORT FEATURES LIST 不再支援的功能的清單
 
@@ -54,11 +54,14 @@ Keys can't be missing<br>
 
 -Python 3<br>
 -PyQt5<br>
+-QDarkStyle<br>
 
 1. Download Python 3 from <a href="https://www.python.org">www.python.org</a> and install it.<br>
    從<a href="https://www.python.org">www.python.org</a>下載並且安裝Python 3
 2. Run `pip install pyqt5` in terminal or `pip install -r requirements.txt`<br>
    在終端中執行`pip install pyqt5`或者`pip install -r requirements.txt`
+3. Run `pip install qdarkstyle` in terminal or `pip install -r requirements.txt`<br>
+   在終端中執行`pip install qdarkstyle`或者`pip install -r requirements.txt`
 
 ### Build for Windows 為Windows構建
 
@@ -104,6 +107,10 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+
+v2.0<br>
+NEW 新功能<br>
+-Add dark theme 添加黑暗模式<Br>
 
 v1.9.1<br>
 NEW 新功能<br>
