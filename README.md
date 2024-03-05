@@ -19,34 +19,14 @@ A simple hash value calculation program written in PyQt5<br>
 
 ![Hash Calculator](2.0.png)
 
+## SUPPORT ARGUMENTS LIST 支援的參數清單
+1. Hash_Calculator_Windows.exe -path <path to file 文件路徑>
+2. Hash_Calculator_Windows.exe -string <strings 字符串>
+
 ## NO LONGER SUPPORT FEATURES LIST 不再支援的功能的清單
 
 -[Auto Compare 自動比較](#auto-compare-自動比較-v15-v18)<br>
 -[JSON Compare JSON對比](#JSON-file-format-JSON-文件格式)
-
-### Auto Compare 自動比較 (v1.5-v1.8)
-
-If there is a "hash_values.json" available in the working directory, Hash_Calculator will auto compare the results, and
-change the color* of results in GUI windows.<br>
-如果在工作目錄下有"hash_values.json"，那麼Hash_Calculator將會自動對比結果並且改變圖形化介面的結果顏色*<br>
-*Green Texts: Matched, Red Texts: Didn't match 綠色字體：相符，紅色字體：不符<br>
-
-### JSON file format JSON 文件格式
-
-```JSON
-{
-  "MD5": "<MD5VALUE, MD5值>",
-  "SHA1": "<SHA1VALUE, SHA1值>",
-  "SHA256": "<SHA256VALUE, SHA256值>",
-  "SHA512": "<SHA512VALUE, SHA512值>",
-  "CRC32": "<CRC32VALUE, CRC32值>"
-}
-
-```
-
-<br>
-Keys can't be missing<br>
-鍵不可以缺失
 
 ## Build and Environment 構建以及環境
 
@@ -107,6 +87,10 @@ As same as the standard version<br>
 ## Changelog 更新日志
 
 #### PyQt5 Edition PyQt5版本
+
+v2.1<br>
+NEW 新功能<br>
+-Start with argument 以參數啟動<br>
 
 v2.0<br>
 NEW 新功能<br>

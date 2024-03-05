@@ -4,8 +4,8 @@ import os
 import sys
 import urllib.request
 import zlib
-import qdarkstyle
 
+import qdarkstyle
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
@@ -88,7 +88,7 @@ class HashCalculator(QMainWindow):
         ]
 
         view_actions = [
-            ('Toggle Dark Mode', 'Ctrl+D', self.toggle_dark_mode)
+            ('Switch Theme', 'Ctrl+D', self.toggle_dark_mode)
         ]
 
         about_actions = [
@@ -178,7 +178,7 @@ class HashCalculator(QMainWindow):
                 version_info = json.loads(data)
 
             latest_version = version_info["latest_version"]
-            current_version = '2.0'
+            current_version = '2.1'
             if latest_version > current_version:
                 self.prompt_update(latest_version, version_info["download_url"])
             elif latest_version == current_version:
@@ -272,9 +272,10 @@ class HashCalculator(QMainWindow):
         self.hash_thread.start()
 
     def show_about_dialog(self):
-        about_text = ("Hash Calculator Version 2.0 (03/04/24) By ElliotCHEN\n\nA simple hash value calculation "
+        about_text = ("Hash Calculator Version 2.1 (03/05/24) By ElliotCHEN\n\nA simple hash value calculation "
                       "program written in PyQt5\n\nhttps://github.com/ElliotCHEN37/Hash-Calculator\n\nThis work is "
-                      "licensed under MIT License\nApp icon is from Google Fonts (Material Icons)")
+                      "licensed under MIT License\nApp icon is from Material Icons by Google Fonts\nDark mode powered "
+                      "by QDarkStyle")
         QMessageBox.about(self, "About", about_text)
 
     def show_changelog_dialog(self):
@@ -357,5 +358,17 @@ class CompareHashDialog(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = HashCalculator()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-path' and len(sys.argv) > 2:
+            file_path = sys.argv[2]
+            window.file_path_line_edit.setText(file_path)
+            window.hash_thread.set_file_path(file_path)
+            window.setWindowTitle('Hash Calculator - Calculating')
+            window.progress_bar.setRange(0, 0)
+            window.hash_thread.start()
+        elif sys.argv[1] == '-string' and len(sys.argv) > 2:
+            input_text = sys.argv[2]
+            window.text_input_line_edit.setText(input_text)
+            window.calculate_hash_text()
     window.show()
     sys.exit(app.exec_())
